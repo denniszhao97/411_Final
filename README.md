@@ -1,21 +1,6 @@
 # 411_Final
 Github for MSiA 411 Data Visualization Final Project
 
-## How did you get the data?
-
-Because GVA limits the number of incidents that are returned from a single query, and because the website's "Export to CSV" functionality was missing crucial fields, it was necessary to obtain this dataset using web scraping techniques.
-
-**Stage 1:** For each date between 1/1/2013 and 3/31/2018, a Python script queried all incidents that happened at that particular date, then scraped the data and wrote it to a CSV file. Each month got its own CSV file, with the exception of 2013, since not many incidents were recorded from then.
-
-**Stage 2:** Each entry was augmented with additional data not directly viewable from the query results page, such as participant information, geolocation data, etc.
-
-**Stage 3:** The entries were sorted in order of increasing date, then merged into a single CSV file.
-
-**[Click here]** to download the tarball the data is stored in. You can decompress the tarball using the [7-Zip] utility on Windows, or via the `tar` executable on macOS/Linux.
-
-[Click here]: DATA_01-2013_03-2018.tar.gz?raw=true
-[7-Zip]: https://www.7-zip.org/
-
 ## Data format
 
 The data is stored in a single CSV file sorted by increasing date. It has the following fields:
