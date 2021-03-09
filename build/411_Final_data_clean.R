@@ -44,6 +44,8 @@ calculate_gun_source <- function(input_string){
         nonstolen_true = 1
       }
     }
+  } else {
+    return("Unknown")
   }
   return(result)
 }  
@@ -74,6 +76,8 @@ calculate_gun_type <- function(input_string){
         shortgun_true = 1
       }
     }
+  } else {
+    return("Unknown")
   }
   return(result)
 }  
@@ -99,7 +103,7 @@ extract_relationship <- function(input_string){
 
 extract_shooter_info <- function(type_string, info_string){
   result = 0
-  if (!is.na(input_string) & !is.na(info_string)){
+  if (!is.na(type_string) & !is.na(info_string)){
     id = -1
     splitted_string = strsplit(type_string, "||",fixed=TRUE)[[1]]
     for (string in splitted_string){
@@ -120,7 +124,7 @@ extract_shooter_info <- function(type_string, info_string){
     }
   }
   if(result == 0){
-    result = "Unknown"
+    result = NA
   }
   return(result)
 }
@@ -128,6 +132,8 @@ calculate_gun_number <- function(input_string){
   if (!is.na(input_string)){
     splitted_string = strsplit(input_string, "||",fixed=TRUE)[[1]]
     return(length(splitted_string))
+  } else {
+    return(NA)
   }
 }  
 
@@ -136,12 +142,12 @@ calculate_gun_number <- function(input_string){
 # Import raw dataset
 gun_data = read_csv(header$dataset('gun_data_13_18.csv'))
 relavent_columns = c("date","state","city_or_county","n_killed","n_injured","gun_stolen",
-                     "gun_type","incident_characteristics","latitude","longitude", "notes",
-                     "participant_age","participant_gender","participant_name","participant_relationship",
-                     "participant_status","participant_type")
+                     "gun_type","incident_characteristics","latitude","longitude", 
+                     "participant_age","participant_gender","participant_relationship"
+                     ,"participant_type")
 gun_data = gun_data %>% 
   select(all_of(relavent_columns)) %>% 
-  drop_na(-c("notes","participant_relationship","participant_name"))
+  drop_na(c("n_killed","n_injured","latitude","longitude","state"))
 
 
 # may consider this is tableau cannot handle large dataset
@@ -156,12 +162,24 @@ gun_data$relationship = sapply(gun_data$participant_relationship, extract_relati
 #use mapply because we use multiple columns as input
 gun_data$shooter_age = mapply(extract_shooter_info,gun_data$participant_type, gun_data$participant_age)
 gun_data$shooter_gender = mapply(extract_shooter_info,gun_data$participant_type, gun_data$participant_gender)
-gun_data$shooter_name = mapply(extract_shooter_info,gun_data$participant_type, gun_data$participant_name)
-gun_data$shooter_status = mapply(extract_shooter_info,gun_data$participant_type, gun_data$participant_status)
 
 # delete cleaned columns
 gun_data = gun_data %>% select(-c("gun_stolen","gun_type","participant_age","participant_gender",
-                                  "participant_name","participant_relationship","participant_status",
-                                  "participant_type"))
-output_path = header$dataset("cleaned_gun_data.csv")
+                                 "participant_relationship", "participant_type"))
+output_path = header$dataset("cleaned_gun_data2.csv")
 write_csv(gun_data,output_path)
+
+data2 = gun_data
+data2$year = format(as.Date(data2$date, format="%Y-%m-%d"),"%Y")
+yearly_aggregate = data2 %>% group_by(year) %>% summarize(Total_killed = sum(n_killed),Total_injured = sum(n_injured),
+                                              Total_GunInvolved = sum(guns_involved,na.rm = TRUE), 
+                                              AVG_Shooter_age = mean(as.numeric(shooter_age),na.rm = TRUE))
+output_path = header$dataset("cleaned_yearly_aggregate.csv")
+write_csv(yearly_aggregate,output_path)
+
+temp2 = data2
+temp2$gun_types[temp2$gun_types == "Rifle Handgun "] = "Handgun Rifle "
+temp2 = temp2 %>% group_by(year, gun_types) %>% summarize(count = n()) %>%
+  filter(gun_types != "" & gun_types != "Unknown" & count > 100)
+output_path = header$dataset("cleaned_gun_type_aggregate.csv")
+write_csv(temp2,output_path)
