@@ -1,6 +1,8 @@
 # 411_Final
 Github for MSiA 411 Data Visualization Final Project
 
+Published Tableau Story is at https://public.tableau.com/profile/zhonghao.zhao#!/vizhome/USGunViolenceAnalysisfrom2013-2018/Story1
+
 ## Data format
 
 The data is stored in a single CSV file sorted by increasing date. It has the following fields:
