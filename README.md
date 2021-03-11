@@ -1,7 +1,7 @@
 # 411_Final
 Github for MSiA 411 Data Visualization Final Project
 
-Published Tableau Story is at https://public.tableau.com/profile/zhonghao.zhao#!/vizhome/USGunViolenceAnalysisfrom2013-2018/Story1
+Published Tableau Story is at https://public.tableau.com/profile/zhonghao.zhao#!/vizhome/411_Final_16154821010640/Story1
 
 ## Data format
 
