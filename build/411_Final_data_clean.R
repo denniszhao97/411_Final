@@ -72,7 +72,7 @@ calculate_gun_type <- function(input_string){
         rifle_true = 1
       }
       if(tail(strsplit(string, ":")[[1]],1) %in% shortgun & shortgun_true == 0){
-        result = paste0(result, "Shortgun ")
+        result = paste0(result, "Shotgun ")
         shortgun_true = 1
       }
     }
